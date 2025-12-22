@@ -165,12 +165,27 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 				return;
 			}
 
-			// Trigger note if it's at the bottom
-			if (
-				noteStartTime <= currentTime &&
-				noteEndTime >= currentTime &&
-				!triggeredNotesRef.current.has(note)
-			) {
+			// Calculate note position
+			const x = getNoteX(note.pitch);
+			const noteWidth = getNoteWidth(note.pitch);
+
+			// Y position: notes fall from top to bottom
+			// When note.startTime === currentTime, the note's bottom edge should align with the keyboard line.
+			// As time increases, notes move down.
+			const timeUntilStart = noteStartTime - currentTime;
+
+			// Note height based on duration
+			const noteHeight = note.duration * pixelsPerSecond;
+			const y = height - timeUntilStart * pixelsPerSecond - noteHeight;
+
+			// Trigger note as it reaches the keyboard (bottom of canvas), using a small time tolerance.
+			const timeTolerance = 0.01; // 10ms tolerance
+			const timeUntilKeyboard = noteStartTime - currentTime;
+			const isAtKeyboard = Math.abs(timeUntilKeyboard) <= timeTolerance;
+			const shouldTrigger =
+				noteStartTime <= currentTime + timeTolerance && noteEndTime >= currentTime;
+
+			if (isAtKeyboard && shouldTrigger && !triggeredNotesRef.current.has(note)) {
 				triggeredNotesRef.current.add(note);
 				onNoteTrigger?.(note);
 			}
@@ -179,19 +194,6 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 			if (noteEndTime < currentTime && triggeredNotesRef.current.has(note)) {
 				triggeredNotesRef.current.delete(note);
 			}
-
-			// Calculate note position
-			const x = getNoteX(note.pitch);
-			const noteWidth = getNoteWidth(note.pitch);
-
-			// Y position: notes fall from top to bottom
-			// When note.startTime === currentTime, y should be at height (bottom)
-			// As time increases, notes move down
-			const timeUntilStart = noteStartTime - currentTime;
-			const y = height - timeUntilStart * pixelsPerSecond;
-
-			// Note height based on duration
-			const noteHeight = note.duration * pixelsPerSecond;
 
 			// Only draw if visible
 			if (y + noteHeight >= 0 && y <= height) {
