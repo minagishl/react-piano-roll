@@ -25,17 +25,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for custom audio engines
 - Velocity-based note coloring
 - Canvas-based rendering for performance
+- Label feature for note identification
+- Rounded corners feature for notes with customizable radius
+- Sound selection feature for different audio samples
+- Background playback feature for continuous audio
+- MIDI sample songs for testing and demonstration
+- Issue templates for GitHub repository
+- CI/CD workflows (check, CodeQL, release)
+- Code formatting tools (Prettier, ESLint)
+- Git hooks with Commitlint and Husky
+- Automated check workflow for CI
+- CodeQL for security analysis
+- Automated release workflow
 
-### Features
+### Changed
 
-- Beautiful piano roll visualization
-- High-quality sample-based audio
-- Extensive customization options
-- Programmatic playback control
-- Responsive design
-- Full TypeScript support
-- Light/dark theme support
-- Performance-optimized canvas rendering
+- Switched to pnpm for package management
+
+### Fixed
+
+- Corrected playback position for accurate timing
+- Ensured first sound plays correctly at the start
+- Prevented simultaneous playback conflicts
 
 [Unreleased]: https://github.com/minagishl/react-piano-roll/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/minagishl/react-piano-roll/releases/tag/v0.1.0
