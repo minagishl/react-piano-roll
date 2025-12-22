@@ -157,6 +157,7 @@ function MusicPlayer() {
 | `rollHeight`      | `number`                   | `400`    | Height of the note roll area         |
 | `onStateChange`   | `(state) => void`          | -        | Callback when playback state changes |
 | `onTimeUpdate`    | `(time) => void`           | -        | Callback when playback time updates  |
+| `loop`            | `boolean`                  | `false`  | Loop playback back to the beginning  |
 
 #### Ref Methods (PianoRollHandle)
 

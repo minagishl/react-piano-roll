@@ -127,6 +127,11 @@ export interface PianoRollProps {
 	 * Allow playback to continue in background tabs
 	 */
 	allowBackgroundPlayback?: boolean;
+
+	/**
+	 * Loop playback back to the beginning when the sequence ends
+	 */
+	loop?: boolean;
 }
 
 export interface PianoRollHandle extends PlaybackController {
@@ -155,6 +160,7 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			onStateChange,
 			onTimeUpdate,
 			allowBackgroundPlayback = true,
+			loop = false,
 		},
 		ref
 	) => {
@@ -220,6 +226,13 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 		// Active notes
 		const [activeNotes, setActiveNotes] = useState<Set<MIDINoteNumber>>(new Set());
 
+		const loopDuration = useMemo(() => {
+			return notes.reduce((maxEndTime, note) => {
+				const endTime = note.startTime + note.duration;
+				return endTime > maxEndTime ? endTime : maxEndTime;
+			}, 0);
+		}, [notes]);
+
 		// Handle note triggering
 		const handleNoteTrigger = useCallback(
 			(note: Note) => {
@@ -246,6 +259,8 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 				onTimeUpdate?.(time);
 			},
 			allowBackgroundPlayback,
+			loop,
+			loopDuration,
 		});
 
 		// Notify state changes

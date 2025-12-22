@@ -21,6 +21,16 @@ interface UsePlaybackOptions {
 	 * Continue playback timing in background tabs
 	 */
 	allowBackgroundPlayback?: boolean;
+
+	/**
+	 * Whether playback time should loop back to 0 when reaching loopDuration
+	 */
+	loop?: boolean;
+
+	/**
+	 * Duration in seconds to loop over (required when loop is true)
+	 */
+	loopDuration?: Time;
 }
 
 interface UsePlaybackReturn extends PlaybackController {
@@ -44,6 +54,8 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 		initialState = 'stopped',
 		initialTime = 0,
 		allowBackgroundPlayback = true,
+		loop = false,
+		loopDuration,
 	} = options;
 
 	const [state, setState] = useState<PlaybackState>(initialState);
@@ -56,6 +68,8 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 	const stateRef = useRef<PlaybackState>(initialState);
 	const tickRef = useRef<() => void>();
 	const allowBackgroundPlaybackRef = useRef<boolean>(allowBackgroundPlayback);
+	const loopRef = useRef<boolean>(loop);
+	const loopDurationRef = useRef<Time>(loopDuration ?? 0);
 
 	// Initialize lastTimeRef after mount to avoid calling performance.now() during render
 	useEffect(() => {
@@ -71,6 +85,22 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 		playbackTimeRef.current = currentTime;
 	}, [currentTime]);
 
+	useEffect(() => {
+		loopRef.current = loop;
+	}, [loop]);
+
+	useEffect(() => {
+		loopDurationRef.current = loopDuration ?? 0;
+	}, [loopDuration]);
+
+	useEffect(() => {
+		if (!loop || !loopDuration || loopDuration <= 0) return;
+		if (playbackTimeRef.current >= loopDuration) {
+			playbackTimeRef.current = 0;
+			setCurrentTime(playbackTimeRef.current);
+		}
+	}, [loop, loopDuration]);
+
 	// Update onTick ref
 	const onTickRef = useRef(onTick);
 	useEffect(() => {
@@ -85,9 +115,16 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 		const deltaTime = (now - lastTimeRef.current) / 1000; // Convert to seconds
 		lastTimeRef.current = now;
 
-		playbackTimeRef.current += deltaTime;
-		setCurrentTime(playbackTimeRef.current);
-		onTickRef.current?.(playbackTimeRef.current);
+		let nextTime = playbackTimeRef.current + deltaTime;
+		const duration = loopDurationRef.current;
+
+		if (loopRef.current && duration > 0 && nextTime >= duration) {
+			nextTime = 0;
+		}
+
+		playbackTimeRef.current = nextTime;
+		setCurrentTime(nextTime);
+		onTickRef.current?.(nextTime);
 
 		if (!allowBackgroundPlaybackRef.current) {
 			animationFrameRef.current = requestAnimationFrame(tickRef.current!);
@@ -148,7 +185,14 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 	}, [stopLoop]);
 
 	const seek = useCallback((time: Time) => {
-		playbackTimeRef.current = Math.max(0, time);
+		let nextTime = Math.max(0, time);
+		const duration = loopDurationRef.current;
+
+		if (loopRef.current && duration > 0) {
+			nextTime = nextTime % duration;
+		}
+
+		playbackTimeRef.current = nextTime;
 		setCurrentTime(playbackTimeRef.current);
 		lastTimeRef.current = performance.now();
 	}, []);

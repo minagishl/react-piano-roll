@@ -789,3 +789,11 @@ export const SilentPlayback: Story = {
 	},
 	render: (args) => <AutoPlayPianoRoll {...args} allowBackgroundPlayback={false} />,
 };
+
+export const LoopingPlayback: Story = {
+	args: {
+		notes: sampleNotes,
+		loop: true,
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
