@@ -27,7 +27,9 @@
 		"lint": "eslint src/**/*.{ts,tsx}",
 		"lint:fix": "eslint src/**/*.{ts,tsx} --fix",
 		"format": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
-		"format:check": "prettier --check \"src/**/*.{ts,tsx,css,md}\""
+		"format:check": "prettier --check \"src/**/*.{ts,tsx,css,md}\"",
+		"commitlint": "commitlint --edit",
+		"prepare": "husky"
 	},
 	"keywords": [
 		"react",
@@ -47,6 +49,8 @@
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^3.2.2",
+		"@commitlint/cli": "^20.2.0",
+		"@commitlint/config-conventional": "^20.2.0",
 		"@eslint/js": "^9.39.2",
 		"@storybook/addon-essentials": "^8.6.15",
 		"@storybook/addon-interactions": "^8.6.15",
@@ -66,6 +70,7 @@
 		"eslint-plugin-react": "^7.37.5",
 		"eslint-plugin-react-hooks": "^7.0.1",
 		"globals": "^16.5.0",
+		"husky": "^9.1.7",
 		"prettier": "^3.7.4",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
