@@ -84,6 +84,13 @@ export interface PianoRollTheme {
 	activeNoteColor?: string;
 
 	/**
+	 * How active notes are colored
+	 * - 'theme': use activeNoteColor
+	 * - 'note': use noteColor based on note velocity
+	 */
+	activeNoteColorMode?: 'theme' | 'note';
+
+	/**
 	 * Note border radius in pixels
 	 */
 	noteRadius?: number;
@@ -107,6 +114,13 @@ export interface PianoRollTheme {
 	 * Active black key color
 	 */
 	activeBlackKeyColor?: string;
+
+	/**
+	 * How active keys are colored
+	 * - 'theme': use activeWhiteKeyColor/activeBlackKeyColor
+	 * - 'note': use noteColor based on note velocity
+	 */
+	activeKeyColorMode?: 'theme' | 'note';
 
 	/**
 	 * Key border color

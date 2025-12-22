@@ -9,6 +9,11 @@ interface KeyboardProps {
 	activeNotes: Set<MIDINoteNumber>;
 
 	/**
+	 * Active note velocities for matching key colors
+	 */
+	activeNoteVelocities?: Map<MIDINoteNumber, number>;
+
+	/**
 	 * Keyboard configuration
 	 */
 	config: Required<KeyboardConfig>;
@@ -32,7 +37,13 @@ interface KeyInfo {
 	height: number;
 }
 
-export const Keyboard: React.FC<KeyboardProps> = ({ activeNotes, config, theme, width }) => {
+export const Keyboard: React.FC<KeyboardProps> = ({
+	activeNotes,
+	activeNoteVelocities,
+	config,
+	theme,
+	width,
+}) => {
 	const {
 		startNote,
 		keyCount,
@@ -75,6 +86,21 @@ export const Keyboard: React.FC<KeyboardProps> = ({ activeNotes, config, theme, 
 	}, [startNote, keyCount]);
 
 	const totalWidth = width || whiteKeyCount * whiteKeyWidth;
+
+	const getActiveKeyColor = useCallback(
+		(velocity?: number) => {
+			if (theme.activeKeyColorMode !== 'note' || velocity === undefined) {
+				return undefined;
+			}
+
+			if (typeof theme.noteColor === 'function') {
+				return theme.noteColor(velocity);
+			}
+
+			return theme.noteColor;
+		},
+		[theme]
+	);
 
 	// Generate key positions
 	const keys = useMemo((): KeyInfo[] => {
@@ -124,12 +150,16 @@ export const Keyboard: React.FC<KeyboardProps> = ({ activeNotes, config, theme, 
 		>
 			{keys.map((key) => {
 				const isActive = activeNotes.has(key.midiNote);
+				const velocity = activeNoteVelocities?.get(key.midiNote);
+				const activeNoteColor = getActiveKeyColor(velocity);
+				const activeFill =
+					activeNoteColor ?? (key.isBlack ? theme.activeBlackKeyColor : theme.activeWhiteKeyColor);
 				const fill = key.isBlack
 					? isActive
-						? theme.activeBlackKeyColor
+						? activeFill
 						: theme.blackKeyColor
 					: isActive
-						? theme.activeWhiteKeyColor
+						? activeFill
 						: theme.whiteKeyColor;
 
 				const noteName = showLabels ? getNoteNameFromMIDI(key.midiNote) : '';

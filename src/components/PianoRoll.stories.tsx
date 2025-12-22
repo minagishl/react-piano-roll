@@ -285,6 +285,22 @@ export const VelocityColored: Story = {
 	render: (args) => <AutoPlayPianoRoll {...args} />,
 };
 
+export const KeysMatchNoteColor: Story = {
+	args: {
+		notes: complexMelody,
+		theme: {
+			noteColor: (velocity: number) => {
+				const hue = (velocity / 127) * 120;
+				return `hsl(${hue}, 70%, 50%)`;
+			},
+			activeNoteColor: '#ffff00',
+			activeKeyColorMode: 'note',
+			activeNoteColorMode: 'note',
+		},
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
 export const FastAnimation: Story = {
 	args: {
 		notes: complexMelody,

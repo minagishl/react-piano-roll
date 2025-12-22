@@ -210,9 +210,12 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 			// Only draw if visible
 			if (y + noteHeight >= 0 && y <= height) {
 				const velocity = note.velocity ?? 64;
+				const noteColor = getNoteColor(velocity);
 				const isActive = noteStartTime <= currentTime && noteEndTime >= currentTime;
+				const activeColor =
+					theme.activeNoteColorMode === 'note' ? noteColor : theme.activeNoteColor;
 
-				ctx.fillStyle = isActive ? theme.activeNoteColor : getNoteColor(velocity);
+				ctx.fillStyle = isActive ? activeColor : noteColor;
 
 				// Draw rounded rectangle
 				const radius = theme.noteRadius;

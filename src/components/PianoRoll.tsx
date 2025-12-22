@@ -31,11 +31,13 @@ const defaultTheme: Required<PianoRollTheme> = {
 	gridSpacing: 50,
 	noteColor: '#4a9eff',
 	activeNoteColor: '#66ff66',
+	activeNoteColorMode: 'theme',
 	noteRadius: 4,
 	whiteKeyColor: '#ffffff',
 	blackKeyColor: '#000000',
 	activeWhiteKeyColor: '#66ff66',
 	activeBlackKeyColor: '#44dd44',
+	activeKeyColorMode: 'theme',
 	keyBorderColor: '#333333',
 };
 
@@ -223,8 +225,21 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			};
 		}, [audioEngine, customAudioEngine]);
 
-		// Active notes
-		const [activeNotes, setActiveNotes] = useState<Set<MIDINoteNumber>>(new Set());
+		type ActiveNoteState = { velocity: number; count: number };
+
+		// Active notes with velocity/count tracking for key coloring
+		const [activeNoteState, setActiveNoteState] = useState<Map<MIDINoteNumber, ActiveNoteState>>(
+			new Map()
+		);
+
+		const activeNotes = useMemo(() => new Set(activeNoteState.keys()), [activeNoteState]);
+		const activeNoteVelocities = useMemo(() => {
+			const velocities = new Map<MIDINoteNumber, number>();
+			activeNoteState.forEach((value, key) => {
+				velocities.set(key, value.velocity);
+			});
+			return velocities;
+		}, [activeNoteState]);
 
 		const loopDuration = useMemo(() => {
 			return notes.reduce((maxEndTime, note) => {
@@ -239,13 +254,28 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 				const velocity = note.velocity ?? 64;
 				audioEngine.playNote(note.pitch, velocity, note.duration);
 
-				setActiveNotes((prev) => new Set(prev).add(note.pitch));
+				setActiveNoteState((prev) => {
+					const next = new Map(prev);
+					const existing = next.get(note.pitch);
+					if (existing) {
+						next.set(note.pitch, { velocity, count: existing.count + 1 });
+					} else {
+						next.set(note.pitch, { velocity, count: 1 });
+					}
+					return next;
+				});
 
 				// Remove from active notes after duration
 				setTimeout(() => {
-					setActiveNotes((prev) => {
-						const next = new Set(prev);
-						next.delete(note.pitch);
+					setActiveNoteState((prev) => {
+						const existing = prev.get(note.pitch);
+						if (!existing) return prev;
+						const next = new Map(prev);
+						if (existing.count <= 1) {
+							next.delete(note.pitch);
+						} else {
+							next.set(note.pitch, { velocity: existing.velocity, count: existing.count - 1 });
+						}
 						return next;
 					});
 				}, note.duration * 1000);
@@ -317,6 +347,7 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 				{/* Piano keyboard */}
 				<Keyboard
 					activeNotes={activeNotes}
+					activeNoteVelocities={activeNoteVelocities}
 					config={keyboardConfig}
 					theme={theme}
 					width={totalWidth}

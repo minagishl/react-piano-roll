@@ -200,11 +200,13 @@ interface PianoRollTheme {
 	gridSpacing?: number;
 	noteColor?: string | ((velocity: number) => string);
 	activeNoteColor?: string;
+	activeNoteColorMode?: 'theme' | 'note';
 	noteRadius?: number;
 	whiteKeyColor?: string;
 	blackKeyColor?: string;
 	activeWhiteKeyColor?: string;
 	activeBlackKeyColor?: string;
+	activeKeyColorMode?: 'theme' | 'note';
 	keyBorderColor?: string;
 }
 ```
