@@ -17,6 +17,16 @@
 		"dist",
 		"README.md"
 	],
+	"author": "minagishl",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/minagishl/react-piano-roll.git"
+	},
+	"homepage": "https://github.com/minagishl/react-piano-roll#readme",
+	"bugs": {
+		"url": "https://github.com/minagishl/react-piano-roll/issues"
+	},
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
@@ -41,8 +51,6 @@
 		"falling-notes",
 		"audio"
 	],
-	"author": "",
-	"license": "MIT",
 	"peerDependencies": {
 		"react": "^18.0.0",
 		"react-dom": "^18.0.0"
