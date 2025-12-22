@@ -19,26 +19,26 @@ export { PianoAudioEngine } from './audio/AudioEngine';
 
 // Types
 export type {
-  Note,
-  MIDINoteNumber,
-  Velocity,
-  Time,
-  PlaybackState,
-  PianoRollTheme,
-  KeyboardConfig,
-  AnimationConfig,
-  PlaybackController,
-  AudioEngine,
+	Note,
+	MIDINoteNumber,
+	Velocity,
+	Time,
+	PlaybackState,
+	PianoRollTheme,
+	KeyboardConfig,
+	AnimationConfig,
+	PlaybackController,
+	AudioEngine,
 } from './types';
 
 // Utilities
 export {
-  isBlackKey,
-  getNoteNameFromMIDI,
-  getMIDIFromNoteName,
-  getKeyXPosition,
-  getBlackKeyOffset,
-  countWhiteKeys,
-  midiToFrequency,
-  getNotesInRange,
+	isBlackKey,
+	getNoteNameFromMIDI,
+	getMIDIFromNoteName,
+	getKeyXPosition,
+	getBlackKeyOffset,
+	countWhiteKeys,
+	midiToFrequency,
+	getNotesInRange,
 } from './utils/piano';
