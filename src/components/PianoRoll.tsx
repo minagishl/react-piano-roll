@@ -283,6 +283,7 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 				<NoteCanvas
 					notes={notes}
 					currentTime={playback.currentTime}
+					isPlaying={playback.state === 'playing'}
 					keyboardConfig={keyboardConfig}
 					theme={theme}
 					animationConfig={animationConfig}

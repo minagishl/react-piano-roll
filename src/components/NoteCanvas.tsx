@@ -20,6 +20,11 @@ interface NoteCanvasProps {
 	currentTime: number;
 
 	/**
+	 * Whether playback is currently running
+	 */
+	isPlaying: boolean;
+
+	/**
 	 * Keyboard configuration
 	 */
 	keyboardConfig: Required<KeyboardConfig>;
@@ -53,6 +58,7 @@ interface NoteCanvasProps {
 export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 	notes,
 	currentTime,
+	isPlaying,
 	keyboardConfig,
 	theme,
 	animationConfig,
@@ -62,6 +68,7 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const triggeredNotesRef = useRef<Set<Note>>(new Set());
+	const previousTimeRef = useRef<number>(currentTime);
 
 	// Calculate note X position based on pitch
 	const getNoteX = useCallback(
@@ -155,6 +162,11 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 		const pixelsPerSecond = fallSpeed;
 		const endTime = currentTime + lookahead;
 
+		const previousTime = previousTimeRef.current;
+		if (currentTime < previousTime) {
+			triggeredNotesRef.current.clear();
+		}
+
 		// Draw notes
 		notes.forEach((note) => {
 			const noteStartTime = note.startTime;
@@ -180,12 +192,12 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 
 			// Trigger note as it reaches the keyboard (bottom of canvas), using a small time tolerance.
 			const timeTolerance = 0.01; // 10ms tolerance
-			const timeUntilKeyboard = noteStartTime - currentTime;
-			const isAtKeyboard = Math.abs(timeUntilKeyboard) <= timeTolerance;
+			const hasReachedKeyboard = noteStartTime <= currentTime + timeTolerance;
+			const justReachedKeyboard = noteStartTime >= previousTime - timeTolerance;
 			const shouldTrigger =
-				noteStartTime <= currentTime + timeTolerance && noteEndTime >= currentTime;
+				isPlaying && hasReachedKeyboard && justReachedKeyboard && noteEndTime >= currentTime;
 
-			if (isAtKeyboard && shouldTrigger && !triggeredNotesRef.current.has(note)) {
+			if (shouldTrigger && !triggeredNotesRef.current.has(note)) {
 				triggeredNotesRef.current.add(note);
 				onNoteTrigger?.(note);
 			}
@@ -218,9 +230,12 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 				ctx.fill();
 			}
 		});
+
+		previousTimeRef.current = currentTime;
 	}, [
 		notes,
 		currentTime,
+		isPlaying,
 		keyboardConfig,
 		theme,
 		animationConfig,
