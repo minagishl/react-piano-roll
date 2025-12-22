@@ -87,33 +87,49 @@ const complexMelody: Note[] = [
 	{ pitch: 67, startTime: 4, duration: 1, velocity: 90 },
 ];
 
+const isDocsView = () => {
+	if (typeof window === 'undefined') return false;
+
+	const params = new URLSearchParams(window.location.search);
+	const viewMode = params.get('viewMode');
+	const path = params.get('path');
+
+	return viewMode === 'docs' || (path?.startsWith('/docs') ?? false);
+};
+
 // Helper component with auto-play
 const AutoPlayPianoRoll = ({
 	notes,
+	autoPlay = true,
 	...props
-}: { notes: Note[] } & React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
+}: { notes: Note[]; autoPlay?: boolean } & React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
 	const pianoRollRef = useRef<PianoRollHandle>(null);
+	const shouldPlay = autoPlay && !isDocsView();
 
 	useEffect(() => {
+		if (!shouldPlay) return;
+
 		// Auto-start playback after a short delay
 		const timer = setTimeout(() => {
 			pianoRollRef.current?.play();
 		}, 500);
 
 		return () => clearTimeout(timer);
-	}, []);
+	}, [shouldPlay]);
 
 	return <PianoRoll ref={pianoRollRef} notes={notes} {...props} />;
 };
 
 const MidiAutoPlayPianoRoll = ({
 	midiUrl,
+	autoPlay = true,
 	...props
-}: { midiUrl: string } & React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
+}: { midiUrl: string; autoPlay?: boolean } & React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
 	const pianoRollRef = useRef<PianoRollHandle>(null);
 	const [notes, setNotes] = useState<Note[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const shouldPlay = autoPlay && !isDocsView();
 
 	useEffect(() => {
 		let isMounted = true;
@@ -137,13 +153,14 @@ const MidiAutoPlayPianoRoll = ({
 	}, [midiUrl]);
 
 	useEffect(() => {
-		if (notes.length === 0) return;
+		if (notes.length === 0 || !shouldPlay) return;
+
 		const timer = setTimeout(() => {
 			pianoRollRef.current?.play();
 		}, 500);
 
 		return () => clearTimeout(timer);
-	}, [notes]);
+	}, [notes, shouldPlay]);
 
 	if (error) {
 		return <div style={{ color: '#c00' }}>{error}</div>;
