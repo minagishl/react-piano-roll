@@ -16,6 +16,7 @@ export { usePlayback } from './hooks/usePlayback';
 
 // Audio engine
 export { PianoAudioEngine } from './audio/AudioEngine';
+export { MusyngKiteAudioEngine } from './audio/MusyngKiteAudioEngine';
 
 // Types
 export type {

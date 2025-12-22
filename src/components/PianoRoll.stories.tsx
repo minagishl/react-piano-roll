@@ -426,3 +426,248 @@ export const RoundedEverything: Story = {
 	},
 	render: (args) => <AutoPlayPianoRoll {...args} />,
 };
+
+// MusyngKite SoundFont stories
+export const MusyngKitePiano: Story = {
+	args: {
+		notes: sampleNotes,
+		instrument: 'acoustic_grand_piano',
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MusyngKiteTrumpet: Story = {
+	args: {
+		notes: sampleNotes,
+		instrument: 'trumpet',
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MusyngKiteViolin: Story = {
+	args: {
+		notes: complexMelody,
+		instrument: 'violin',
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MusyngKiteGuitar: Story = {
+	args: {
+		notes: chordProgression,
+		instrument: 'acoustic_guitar_nylon',
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MusyngKiteSaxophone: Story = {
+	args: {
+		notes: complexMelody,
+		instrument: 'alto_sax',
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MusyngKiteFlute: Story = {
+	args: {
+		notes: sampleNotes,
+		instrument: 'flute',
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MusyngKiteOrgan: Story = {
+	args: {
+		notes: chordProgression,
+		instrument: 'church_organ',
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MusyngKiteByProgramNumber: Story = {
+	args: {
+		notes: sampleNotes,
+		instrument: 56, // Trumpet (MIDI program 56)
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+const InstrumentSelectorDemo = (args: React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
+	const pianoRollRef = useRef<PianoRollHandle>(null);
+	const [selectedInstrument, setSelectedInstrument] = React.useState<string | number>(
+		'acoustic_grand_piano'
+	);
+
+	const instruments = [
+		{ name: 'Acoustic Grand Piano', value: 'acoustic_grand_piano' },
+		{ name: 'Trumpet', value: 'trumpet' },
+		{ name: 'Violin', value: 'violin' },
+		{ name: 'Acoustic Guitar (Nylon)', value: 'acoustic_guitar_nylon' },
+		{ name: 'Alto Sax', value: 'alto_sax' },
+		{ name: 'Flute', value: 'flute' },
+		{ name: 'Church Organ', value: 'church_organ' },
+		{ name: 'Electric Piano 1', value: 'electric_piano_1' },
+		{ name: 'Cello', value: 'cello' },
+		{ name: 'French Horn', value: 'french_horn' },
+	];
+
+	return (
+		<div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+			<div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+				<label htmlFor='instrument-select' style={{ fontSize: '14px', fontWeight: 'bold' }}>
+					Instrument:
+				</label>
+				<select
+					id='instrument-select'
+					value={typeof selectedInstrument === 'string' ? selectedInstrument : ''}
+					onChange={(e) => setSelectedInstrument(e.target.value)}
+					style={{
+						padding: '8px 12px',
+						fontSize: '14px',
+						borderRadius: '4px',
+						border: '1px solid #ccc',
+						cursor: 'pointer',
+					}}
+				>
+					{instruments.map((inst) => (
+						<option key={inst.value} value={inst.value}>
+							{inst.name}
+						</option>
+					))}
+				</select>
+				<button
+					onClick={() => pianoRollRef.current?.play()}
+					style={{
+						padding: '8px 16px',
+						fontSize: '14px',
+						cursor: 'pointer',
+						borderRadius: '4px',
+						border: '1px solid #ccc',
+						backgroundColor: '#f0f0f0',
+					}}
+				>
+					Play
+				</button>
+				<button
+					onClick={() => pianoRollRef.current?.stop()}
+					style={{
+						padding: '8px 16px',
+						fontSize: '14px',
+						cursor: 'pointer',
+						borderRadius: '4px',
+						border: '1px solid #ccc',
+						backgroundColor: '#f0f0f0',
+					}}
+				>
+					Stop
+				</button>
+			</div>
+			<PianoRoll ref={pianoRollRef} {...args} instrument={selectedInstrument} />
+		</div>
+	);
+};
+
+export const MusyngKiteWithInstrumentSelector: Story = {
+	args: {
+		notes: sampleNotes,
+	},
+	render: (args) => <InstrumentSelectorDemo {...args} />,
+};
+
+const ProgramNumberDemo = (args: React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
+	const pianoRollRef = useRef<PianoRollHandle>(null);
+	const [programNumber, setProgramNumber] = React.useState<number>(0);
+
+	const instrumentCategories = [
+		{ category: 'Piano', programs: [0, 1, 2, 3, 4, 5, 6, 7] },
+		{ category: 'Organ', programs: [16, 17, 18, 19, 20, 21] },
+		{ category: 'Guitar', programs: [24, 25, 26, 27, 28, 29, 30, 31] },
+		{ category: 'Bass', programs: [32, 33, 34, 35, 36, 37, 38, 39] },
+		{ category: 'Strings', programs: [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51] },
+		{ category: 'Brass', programs: [56, 57, 58, 59, 60, 61, 62, 63] },
+		{ category: 'Saxophone', programs: [64, 65, 66, 67] },
+		{ category: 'Woodwind', programs: [68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79] },
+	];
+
+	return (
+		<div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+			<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+				<label style={{ fontSize: '14px', fontWeight: 'bold' }}>
+					MIDI Program Number: {programNumber}
+				</label>
+				<input
+					type='range'
+					min='0'
+					max='127'
+					value={programNumber}
+					onChange={(e) => setProgramNumber(Number(e.target.value))}
+					style={{ width: '300px' }}
+				/>
+				<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+					{instrumentCategories.map((category) => (
+						<div key={category.category} style={{ marginRight: '20px' }}>
+							<div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
+								{category.category}:
+							</div>
+							<div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+								{category.programs.map((prog) => (
+									<button
+										key={prog}
+										onClick={() => setProgramNumber(prog)}
+										style={{
+											padding: '4px 8px',
+											fontSize: '11px',
+											cursor: 'pointer',
+											borderRadius: '3px',
+											border: '1px solid #ccc',
+											backgroundColor: programNumber === prog ? '#4a9eff' : '#f0f0f0',
+											color: programNumber === prog ? '#fff' : '#000',
+										}}
+									>
+										{prog}
+									</button>
+								))}
+							</div>
+						</div>
+					))}
+				</div>
+				<div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+					<button
+						onClick={() => pianoRollRef.current?.play()}
+						style={{
+							padding: '8px 16px',
+							fontSize: '14px',
+							cursor: 'pointer',
+							borderRadius: '4px',
+							border: '1px solid #ccc',
+							backgroundColor: '#f0f0f0',
+						}}
+					>
+						Play
+					</button>
+					<button
+						onClick={() => pianoRollRef.current?.stop()}
+						style={{
+							padding: '8px 16px',
+							fontSize: '14px',
+							cursor: 'pointer',
+							borderRadius: '4px',
+							border: '1px solid #ccc',
+							backgroundColor: '#f0f0f0',
+						}}
+					>
+						Stop
+					</button>
+				</div>
+			</div>
+			<PianoRoll ref={pianoRollRef} {...args} instrument={programNumber} />
+		</div>
+	);
+};
+
+export const MusyngKiteWithProgramNumberSelector: Story = {
+	args: {
+		notes: sampleNotes,
+	},
+	render: (args) => <ProgramNumberDemo {...args} />,
+};

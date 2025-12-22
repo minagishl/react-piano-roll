@@ -1,4 +1,4 @@
-import React, {
+import {
 	useRef,
 	useEffect,
 	useState,
@@ -19,6 +19,7 @@ import type {
 import { Keyboard } from './Keyboard';
 import { NoteCanvas } from './NoteCanvas';
 import { PianoAudioEngine } from '../audio/AudioEngine';
+import { MusyngKiteAudioEngine } from '../audio/MusyngKiteAudioEngine';
 import { usePlayback } from '../hooks/usePlayback';
 import { countWhiteKeys } from '../utils/piano';
 
@@ -84,9 +85,23 @@ export interface PianoRollProps {
 
 	/**
 	 * Custom audio engine (optional)
-	 * If not provided, uses default piano engine
+	 * If not provided, uses default piano engine or MusyngKite engine if instrument is specified
 	 */
 	audioEngine?: AudioEngine;
+
+	/**
+	 * Instrument selection for MusyngKite SoundFont
+	 * Can be a MIDI program number (0-127) or instrument name (e.g., 'acoustic_grand_piano', 'trumpet')
+	 * If specified, uses MusyngKiteAudioEngine instead of default PianoAudioEngine
+	 */
+	instrument?: string | number;
+
+	/**
+	 * Custom SoundFont URL (optional)
+	 * Only used when instrument is specified
+	 * Default: Uses built-in MusyngKite SoundFont
+	 */
+	soundfontUrl?: string;
 
 	/**
 	 * Width of the component (auto-calculated if not provided)
@@ -128,6 +143,8 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			keyboardConfig: keyboardConfigOverride,
 			animationConfig: animationConfigOverride,
 			audioEngine: customAudioEngine,
+			instrument,
+			soundfontUrl,
 			width: customWidth,
 			rollHeight = 400,
 			onStateChange,
@@ -153,6 +170,10 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			if (customAudioEngine) {
 				return customAudioEngine;
 			}
+			// Use MusyngKite engine if instrument is specified
+			if (instrument !== undefined) {
+				return new MusyngKiteAudioEngine(instrument, soundfontUrl);
+			}
 			return new PianoAudioEngine();
 		});
 		const defaultAudioEngineRef = useRef<AudioEngine | null>(null);
@@ -160,9 +181,22 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 		// Store reference to default engine for cleanup
 		useEffect(() => {
 			if (!customAudioEngine && !defaultAudioEngineRef.current) {
-				defaultAudioEngineRef.current = audioEngine as PianoAudioEngine;
+				defaultAudioEngineRef.current = audioEngine;
 			}
 		}, [audioEngine, customAudioEngine]);
+
+		// Update instrument if it changes (for MusyngKite engine)
+		useEffect(() => {
+			if (
+				!customAudioEngine &&
+				instrument !== undefined &&
+				audioEngine instanceof MusyngKiteAudioEngine
+			) {
+				audioEngine.setInstrument(instrument).catch((error) => {
+					console.error('Failed to change instrument:', error);
+				});
+			}
+		}, [instrument, audioEngine, customAudioEngine]);
 
 		// Initialize audio engine
 		useEffect(() => {
