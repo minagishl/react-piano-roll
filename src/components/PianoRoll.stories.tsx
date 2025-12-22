@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { Midi } from '@tonejs/midi';
 import { PianoRoll, PianoRollHandle } from './PianoRoll';
 import type { Note } from '../types';
 
@@ -14,6 +15,29 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+const laCampanellaUrl = new URL('../assets/LaCampanella.mid', import.meta.url).toString();
+const quatreMainsUrl = new URL('../assets/QuatreMains.mid', import.meta.url).toString();
+
+const loadMidiNotes = async (url: string): Promise<Note[]> => {
+	const response = await fetch(url);
+	const arrayBuffer = await response.arrayBuffer();
+	const midi = new Midi(arrayBuffer);
+	const notes: Note[] = [];
+
+	midi.tracks.forEach((track) => {
+		track.notes.forEach((note) => {
+			notes.push({
+				pitch: note.midi,
+				startTime: note.time,
+				duration: note.duration,
+				velocity: Math.round(note.velocity * 127),
+			});
+		});
+	});
+
+	return notes.sort((a, b) => a.startTime - b.startTime);
+};
 
 // Sample notes for demonstration
 const sampleNotes: Note[] = [
@@ -82,6 +106,56 @@ const AutoPlayPianoRoll = ({
 	return <PianoRoll ref={pianoRollRef} notes={notes} {...props} />;
 };
 
+const MidiAutoPlayPianoRoll = ({
+	midiUrl,
+	...props
+}: { midiUrl: string } & React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
+	const pianoRollRef = useRef<PianoRollHandle>(null);
+	const [notes, setNotes] = useState<Note[]>([]);
+	const [error, setError] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		let isMounted = true;
+
+		loadMidiNotes(midiUrl)
+			.then((loadedNotes) => {
+				if (!isMounted) return;
+				setNotes(loadedNotes);
+				setError(null);
+				setIsLoading(false);
+			})
+			.catch((err: Error) => {
+				if (!isMounted) return;
+				setError(err.message || 'Failed to load MIDI file.');
+				setIsLoading(false);
+			});
+
+		return () => {
+			isMounted = false;
+		};
+	}, [midiUrl]);
+
+	useEffect(() => {
+		if (notes.length === 0) return;
+		const timer = setTimeout(() => {
+			pianoRollRef.current?.play();
+		}, 500);
+
+		return () => clearTimeout(timer);
+	}, [notes]);
+
+	if (error) {
+		return <div style={{ color: '#c00' }}>{error}</div>;
+	}
+
+	if (isLoading || notes.length === 0) {
+		return <div>Loading MIDI...</div>;
+	}
+
+	return <PianoRoll ref={pianoRollRef} {...props} notes={notes} />;
+};
+
 export const Default: Story = {
 	args: {
 		notes: sampleNotes,
@@ -101,6 +175,26 @@ export const ComplexMelody: Story = {
 		notes: complexMelody,
 	},
 	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MidiExampleLaCampanella: Story = {
+	args: {
+		notes: [],
+		rollHeight: 500,
+	},
+	render: (args) => (
+		<MidiAutoPlayPianoRoll {...args} midiUrl={laCampanellaUrl} instrument='acoustic_grand_piano' />
+	),
+};
+
+export const MidiExampleQuatreMains: Story = {
+	args: {
+		notes: [],
+		rollHeight: 500,
+	},
+	render: (args) => (
+		<MidiAutoPlayPianoRoll {...args} midiUrl={quatreMainsUrl} instrument='acoustic_grand_piano' />
+	),
 };
 
 export const SmallKeyboard: Story = {
