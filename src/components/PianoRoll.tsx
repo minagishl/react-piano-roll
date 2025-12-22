@@ -51,6 +51,7 @@ const defaultKeyboardConfig: Required<KeyboardConfig> = {
 	labelFontFamily: 'Arial, sans-serif',
 	whiteLabelColor: '#000000',
 	blackLabelColor: '#ffffff',
+	keyBorderRadius: 0,
 };
 
 // Default animation config

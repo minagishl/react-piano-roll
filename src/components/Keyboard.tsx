@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import type { MIDINoteNumber, KeyboardConfig, PianoRollTheme } from '../types';
 import { isBlackKey, countWhiteKeys, getNoteNameFromMIDI } from '../utils/piano';
 
@@ -45,7 +45,29 @@ export const Keyboard: React.FC<KeyboardProps> = ({ activeNotes, config, theme, 
 		labelFontFamily,
 		whiteLabelColor,
 		blackLabelColor,
+		keyBorderRadius,
 	} = config;
+
+	// Generate SVG path for a rectangle with only bottom corners rounded
+	const getKeyPath = useCallback(
+		(x: number, y: number, w: number, h: number, radius: number): string => {
+			if (radius === 0) {
+				return `M ${x} ${y} L ${x + w} ${y} L ${x + w} ${y + h} L ${x} ${y + h} Z`;
+			}
+
+			const r = Math.min(radius, w / 2, h / 2);
+			return `
+				M ${x} ${y}
+				L ${x + w} ${y}
+				L ${x + w} ${y + h - r}
+				Q ${x + w} ${y + h} ${x + w - r} ${y + h}
+				L ${x + r} ${y + h}
+				Q ${x} ${y + h} ${x} ${y + h - r}
+				Z
+			`;
+		},
+		[]
+	);
 
 	// Calculate keyboard dimensions
 	const whiteKeyCount = useMemo(() => {
@@ -115,15 +137,17 @@ export const Keyboard: React.FC<KeyboardProps> = ({ activeNotes, config, theme, 
 
 				return (
 					<g key={key.midiNote}>
-						<rect
-							x={key.x}
-							y={0}
-							width={key.width}
-							height={key.height}
+						<path
+							d={getKeyPath(
+								key.x,
+								0,
+								key.width,
+								key.height,
+								key.isBlack ? keyBorderRadius / 2 : keyBorderRadius
+							)}
 							fill={fill}
 							stroke={theme.keyBorderColor}
 							strokeWidth={1}
-							rx={2}
 							data-note={key.midiNote}
 							style={{
 								transition: 'fill 0.05s ease-out',

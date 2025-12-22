@@ -172,6 +172,11 @@ export interface KeyboardConfig {
 	 * Label color for black keys
 	 */
 	blackLabelColor?: string;
+
+	/**
+	 * Border radius for bottom corners of keys in pixels
+	 */
+	keyBorderRadius?: number;
 }
 
 /**

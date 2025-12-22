@@ -336,3 +336,33 @@ export const FullPianoWithLabels: Story = {
 	},
 	render: (args) => <AutoPlayPianoRoll {...args} />,
 };
+
+export const WithRoundedBottomCorners: Story = {
+	args: {
+		notes: sampleNotes,
+		keyboardConfig: {
+			keyCount: 24,
+			startNote: 48,
+			showLabels: true,
+			keyBorderRadius: 4,
+			whiteKeyWidth: 32,
+			whiteKeyHeight: 150,
+		},
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const WithLargeRoundedCorners: Story = {
+	args: {
+		notes: chordProgression,
+		keyboardConfig: {
+			keyCount: 36,
+			startNote: 48,
+			showLabels: true,
+			keyBorderRadius: 4,
+			whiteKeyWidth: 32,
+			whiteKeyHeight: 150,
+		},
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
