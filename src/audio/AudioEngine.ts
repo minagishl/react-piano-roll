@@ -197,10 +197,10 @@ export class PianoAudioEngine implements AudioEngine {
 		const gain = velocity / 127;
 
 		// Use multiple oscillators for richer tone
-		const oscillators = [
-			{ type: 'sine' as OscillatorType, detune: 0, gain: 0.5 },
-			{ type: 'sine' as OscillatorType, detune: 1200, gain: 0.2 }, // Octave up
-			{ type: 'sine' as OscillatorType, detune: 1900, gain: 0.1 }, // Fifth up
+		const oscillators: Array<{ type: OscillatorNode['type']; detune: number; gain: number }> = [
+			{ type: 'sine', detune: 0, gain: 0.5 },
+			{ type: 'sine', detune: 1200, gain: 0.2 }, // Octave up
+			{ type: 'sine', detune: 1900, gain: 0.1 }, // Fifth up
 		];
 
 		const sources = oscillators.map(({ type, detune, gain: oscGain }) => {
@@ -238,7 +238,8 @@ export class PianoAudioEngine implements AudioEngine {
 		sources.forEach(({ osc }) => osc.stop(releaseTime + release));
 
 		// Store primary oscillator for note management
-		const primarySource = sources[0].osc as any;
+		// Create a wrapper object that implements AudioBufferSourceNode interface
+		const primarySource = sources[0].osc as unknown as AudioBufferSourceNode;
 		this.activeNotes.set(pitch, { source: primarySource, gain: gainNode });
 
 		primarySource.onended = () => {

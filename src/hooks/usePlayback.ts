@@ -40,9 +40,15 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 	const [currentTime, setCurrentTime] = useState<Time>(initialTime);
 
 	const animationFrameRef = useRef<number>();
-	const lastTimeRef = useRef<number>(performance.now());
+	const lastTimeRef = useRef<number>(0);
 	const playbackTimeRef = useRef<Time>(initialTime);
 	const stateRef = useRef<PlaybackState>(initialState);
+	const tickRef = useRef<() => void>();
+
+	// Initialize lastTimeRef after mount to avoid calling performance.now() during render
+	useEffect(() => {
+		lastTimeRef.current = performance.now();
+	}, []);
 
 	// Update refs when state changes
 	useEffect(() => {
@@ -52,6 +58,12 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 	useEffect(() => {
 		playbackTimeRef.current = currentTime;
 	}, [currentTime]);
+
+	// Update onTick ref
+	const onTickRef = useRef(onTick);
+	useEffect(() => {
+		onTickRef.current = onTick;
+	}, [onTick]);
 
 	// Animation loop
 	const tick = useCallback(() => {
@@ -63,18 +75,23 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 
 		playbackTimeRef.current += deltaTime;
 		setCurrentTime(playbackTimeRef.current);
-		onTick?.(playbackTimeRef.current);
+		onTickRef.current?.(playbackTimeRef.current);
 
-		animationFrameRef.current = requestAnimationFrame(tick);
-	}, [onTick]);
+		animationFrameRef.current = requestAnimationFrame(tickRef.current!);
+	}, []);
+
+	// Update tick ref when tick changes
+	useEffect(() => {
+		tickRef.current = tick;
+	}, [tick]);
 
 	const play = useCallback(() => {
 		if (stateRef.current === 'playing') return;
 
 		setState('playing');
 		lastTimeRef.current = performance.now();
-		animationFrameRef.current = requestAnimationFrame(tick);
-	}, [tick]);
+		animationFrameRef.current = requestAnimationFrame(tickRef.current!);
+	}, []);
 
 	const pause = useCallback(() => {
 		if (stateRef.current !== 'playing') return;

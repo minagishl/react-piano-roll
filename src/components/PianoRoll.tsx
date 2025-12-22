@@ -1,4 +1,4 @@
-import {
+import React, {
 	useRef,
 	useEffect,
 	useState,
@@ -148,9 +148,21 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			[animationConfigOverride]
 		);
 
-		// Audio engine
-		const defaultAudioEngineRef = useRef<AudioEngine>(new PianoAudioEngine());
-		const audioEngine = customAudioEngine || defaultAudioEngineRef.current;
+		// Audio engine - use lazy initialization to avoid creating if customAudioEngine is provided
+		const [audioEngine] = useState<AudioEngine>(() => {
+			if (customAudioEngine) {
+				return customAudioEngine;
+			}
+			return new PianoAudioEngine();
+		});
+		const defaultAudioEngineRef = useRef<AudioEngine | null>(null);
+
+		// Store reference to default engine for cleanup
+		useEffect(() => {
+			if (!customAudioEngine && !defaultAudioEngineRef.current) {
+				defaultAudioEngineRef.current = audioEngine as PianoAudioEngine;
+			}
+		}, [audioEngine, customAudioEngine]);
 
 		// Initialize audio engine
 		useEffect(() => {
@@ -159,8 +171,8 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			});
 
 			return () => {
-				if (!customAudioEngine) {
-					audioEngine.dispose();
+				if (!customAudioEngine && defaultAudioEngineRef.current) {
+					defaultAudioEngineRef.current.dispose();
 				}
 			};
 		}, [audioEngine, customAudioEngine]);

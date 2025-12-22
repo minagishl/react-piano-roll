@@ -105,7 +105,7 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 			}
 			return theme.noteColor;
 		},
-		[theme.noteColor]
+		[theme]
 	);
 
 	// Draw the piano roll

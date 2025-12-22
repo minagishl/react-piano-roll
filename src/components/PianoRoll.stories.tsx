@@ -64,7 +64,10 @@ const complexMelody: Note[] = [
 ];
 
 // Helper component with auto-play
-const AutoPlayPianoRoll = ({ notes, ...props }: { notes: Note[] } & any) => {
+const AutoPlayPianoRoll = ({
+	notes,
+	...props
+}: { notes: Note[] } & React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
 	const pianoRollRef = useRef<PianoRollHandle>(null);
 
 	useEffect(() => {
@@ -217,61 +220,63 @@ export const CustomDimensions: Story = {
 	render: (args) => <AutoPlayPianoRoll {...args} />,
 };
 
+const ExternalControlsDemo = (args: React.ComponentPropsWithoutRef<typeof PianoRoll>) => {
+	const pianoRollRef = useRef<PianoRollHandle>(null);
+
+	return (
+		<div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+			<div style={{ display: 'flex', gap: '10px' }}>
+				<button
+					onClick={() => pianoRollRef.current?.play()}
+					style={{
+						padding: '10px 20px',
+						fontSize: '16px',
+						cursor: 'pointer',
+					}}
+				>
+					Play
+				</button>
+				<button
+					onClick={() => pianoRollRef.current?.pause()}
+					style={{
+						padding: '10px 20px',
+						fontSize: '16px',
+						cursor: 'pointer',
+					}}
+				>
+					Pause
+				</button>
+				<button
+					onClick={() => pianoRollRef.current?.stop()}
+					style={{
+						padding: '10px 20px',
+						fontSize: '16px',
+						cursor: 'pointer',
+					}}
+				>
+					Stop
+				</button>
+				<button
+					onClick={() => pianoRollRef.current?.seek(2)}
+					style={{
+						padding: '10px 20px',
+						fontSize: '16px',
+						cursor: 'pointer',
+					}}
+				>
+					Seek to 2s
+				</button>
+			</div>
+			<PianoRoll ref={pianoRollRef} {...args} />
+		</div>
+	);
+};
+
 export const WithExternalControls: Story = {
 	args: {
 		notes: chordProgression,
 	},
-	render: (args) => {
-		const pianoRollRef = useRef<PianoRollHandle>(null);
-
-		return (
-			<div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-				<div style={{ display: 'flex', gap: '10px' }}>
-					<button
-						onClick={() => pianoRollRef.current?.play()}
-						style={{
-							padding: '10px 20px',
-							fontSize: '16px',
-							cursor: 'pointer',
-						}}
-					>
-						Play
-					</button>
-					<button
-						onClick={() => pianoRollRef.current?.pause()}
-						style={{
-							padding: '10px 20px',
-							fontSize: '16px',
-							cursor: 'pointer',
-						}}
-					>
-						Pause
-					</button>
-					<button
-						onClick={() => pianoRollRef.current?.stop()}
-						style={{
-							padding: '10px 20px',
-							fontSize: '16px',
-							cursor: 'pointer',
-						}}
-					>
-						Stop
-					</button>
-					<button
-						onClick={() => pianoRollRef.current?.seek(2)}
-						style={{
-							padding: '10px 20px',
-							fontSize: '16px',
-							cursor: 'pointer',
-						}}
-					>
-						Seek to 2s
-					</button>
-				</div>
-				<PianoRoll ref={pianoRollRef} {...args} />
-			</div>
-		);
-	},
+	render: (args) => <ExternalControlsDemo {...args} />,
 };
 
 export const WithKeyboardLabels: Story = {

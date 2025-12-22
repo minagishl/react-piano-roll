@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import type { MIDINoteNumber, KeyboardConfig, PianoRollTheme } from '../types';
 import { isBlackKey, countWhiteKeys, getNoteNameFromMIDI } from '../utils/piano';
 
@@ -129,8 +129,8 @@ export const Keyboard: React.FC<KeyboardProps> = ({ activeNotes, config, theme, 
 						? theme.activeBlackKeyColor
 						: theme.blackKeyColor
 					: isActive
-					? theme.activeWhiteKeyColor
-					: theme.whiteKeyColor;
+						? theme.activeWhiteKeyColor
+						: theme.whiteKeyColor;
 
 				const noteName = showLabels ? getNoteNameFromMIDI(key.midiNote) : '';
 				const labelColor = key.isBlack ? blackLabelColor : whiteLabelColor;
