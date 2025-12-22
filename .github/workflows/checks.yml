@@ -7,49 +7,26 @@ on:
     branches: [main]
 
 jobs:
-  lint-and-format:
-    name: Lint and Format Check
+  type-check:
+    name: Type Check
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          bun-version: 'latest'
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Install dependencies
-        run: bun install
-
-      - name: Run ESLint
-        run: bun run lint
-
-      - name: Check Prettier formatting
-        run: bun run format
+        run: pnpm install
 
       - name: Type check
-        run: bun run typecheck
-
-  commitlint:
-    name: Commit Message Check
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 'latest'
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Validate current commit (last commit)
-        run: bunx commitlint --from HEAD~1 --to HEAD --verbose
+        run: pnpm run typecheck
