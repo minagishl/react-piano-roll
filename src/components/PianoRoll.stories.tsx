@@ -366,3 +366,58 @@ export const WithLargeRoundedCorners: Story = {
 	},
 	render: (args) => <AutoPlayPianoRoll {...args} />,
 };
+
+export const SharpNoteBlocks: Story = {
+	args: {
+		notes: chordProgression,
+		keyboardConfig: {
+			keyCount: 24,
+			startNote: 48,
+		},
+		theme: {
+			noteRadius: 0,
+		},
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const LargeRoundedNoteBlocks: Story = {
+	args: {
+		notes: complexMelody,
+		keyboardConfig: {
+			keyCount: 24,
+			startNote: 60,
+		},
+		theme: {
+			noteRadius: 12,
+			noteColor: '#ff6b6b',
+			activeNoteColor: '#ffd93d',
+		},
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const RoundedEverything: Story = {
+	args: {
+		notes: chordProgression,
+		keyboardConfig: {
+			keyCount: 24,
+			startNote: 48,
+			showLabels: true,
+			keyBorderRadius: 6,
+			whiteKeyWidth: 32,
+			whiteKeyHeight: 150,
+		},
+		theme: {
+			noteRadius: 8,
+			backgroundColor: '#f5f5f5',
+			gridColor: 'rgba(0, 0, 0, 0.1)',
+			noteColor: '#6c5ce7',
+			activeNoteColor: '#00b894',
+			whiteKeyColor: '#ffffff',
+			blackKeyColor: '#2d3436',
+		},
+		rollHeight: 500,
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
