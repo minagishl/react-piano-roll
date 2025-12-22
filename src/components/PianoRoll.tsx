@@ -225,20 +225,34 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			};
 		}, [audioEngine, customAudioEngine]);
 
-		type ActiveNoteState = { velocity: number; count: number };
+		type ActiveNoteEntry = { velocity: number; color?: string };
 
 		// Active notes with velocity/count tracking for key coloring
-		const [activeNoteState, setActiveNoteState] = useState<Map<MIDINoteNumber, ActiveNoteState>>(
+		const [activeNoteState, setActiveNoteState] = useState<Map<MIDINoteNumber, ActiveNoteEntry[]>>(
 			new Map()
 		);
 
 		const activeNotes = useMemo(() => new Set(activeNoteState.keys()), [activeNoteState]);
 		const activeNoteVelocities = useMemo(() => {
 			const velocities = new Map<MIDINoteNumber, number>();
-			activeNoteState.forEach((value, key) => {
-				velocities.set(key, value.velocity);
+			activeNoteState.forEach((entries, key) => {
+				const lastEntry = entries[entries.length - 1];
+				if (lastEntry) {
+					velocities.set(key, lastEntry.velocity);
+				}
 			});
 			return velocities;
+		}, [activeNoteState]);
+
+		const activeNoteColors = useMemo(() => {
+			const colors = new Map<MIDINoteNumber, string>();
+			activeNoteState.forEach((entries, key) => {
+				const lastEntry = entries[entries.length - 1];
+				if (lastEntry?.color) {
+					colors.set(key, lastEntry.color);
+				}
+			});
+			return colors;
 		}, [activeNoteState]);
 
 		const loopDuration = useMemo(() => {
@@ -252,16 +266,13 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 		const handleNoteTrigger = useCallback(
 			(note: Note) => {
 				const velocity = note.velocity ?? 64;
+				const color = note.color;
 				audioEngine.playNote(note.pitch, velocity, note.duration);
 
 				setActiveNoteState((prev) => {
 					const next = new Map(prev);
-					const existing = next.get(note.pitch);
-					if (existing) {
-						next.set(note.pitch, { velocity, count: existing.count + 1 });
-					} else {
-						next.set(note.pitch, { velocity, count: 1 });
-					}
+					const entries = next.get(note.pitch) ?? [];
+					next.set(note.pitch, [...entries, { velocity, color }]);
 					return next;
 				});
 
@@ -270,11 +281,17 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 					setActiveNoteState((prev) => {
 						const existing = prev.get(note.pitch);
 						if (!existing) return prev;
+						const index = existing.findIndex(
+							(entry) => entry.velocity === velocity && entry.color === color
+						);
+						if (index === -1) return prev;
+						const nextEntries = existing.slice();
+						nextEntries.splice(index, 1);
 						const next = new Map(prev);
-						if (existing.count <= 1) {
+						if (nextEntries.length === 0) {
 							next.delete(note.pitch);
 						} else {
-							next.set(note.pitch, { velocity: existing.velocity, count: existing.count - 1 });
+							next.set(note.pitch, nextEntries);
 						}
 						return next;
 					});
@@ -348,6 +365,7 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 				<Keyboard
 					activeNotes={activeNotes}
 					activeNoteVelocities={activeNoteVelocities}
+					activeNoteColors={activeNoteColors}
 					config={keyboardConfig}
 					theme={theme}
 					width={totalWidth}

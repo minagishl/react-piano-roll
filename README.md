@@ -181,6 +181,7 @@ interface Note {
 	startTime: number; // Start time in seconds
 	duration: number; // Duration in seconds
 	velocity?: number; // Note velocity (0-127), defaults to 64
+	color?: string; // Custom note color (overrides theme noteColor)
 }
 ```
 

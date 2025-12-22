@@ -42,6 +42,11 @@ export interface Note {
 	 * Note velocity (0-127), defaults to 64 if not specified
 	 */
 	velocity?: Velocity;
+
+	/**
+	 * Custom color for this note (overrides theme noteColor)
+	 */
+	color?: string;
 }
 
 /**

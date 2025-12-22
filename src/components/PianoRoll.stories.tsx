@@ -52,6 +52,17 @@ const sampleNotes: Note[] = [
 	{ pitch: 72, startTime: 3.5, duration: 1.0, velocity: 115 },
 ];
 
+const coloredNotes: Note[] = [
+	{ pitch: 60, startTime: 0, duration: 0.5, velocity: 80, color: '#ff6b6b' },
+	{ pitch: 62, startTime: 0.5, duration: 0.5, velocity: 85, color: '#feca57' },
+	{ pitch: 64, startTime: 1.0, duration: 0.5, velocity: 90, color: '#1dd1a1' },
+	{ pitch: 65, startTime: 1.5, duration: 0.5, velocity: 95, color: '#54a0ff' },
+	{ pitch: 67, startTime: 2.0, duration: 0.5, velocity: 100, color: '#5f27cd' },
+	{ pitch: 69, startTime: 2.5, duration: 0.5, velocity: 105, color: '#ff9ff3' },
+	{ pitch: 71, startTime: 3.0, duration: 0.5, velocity: 110, color: '#48dbfb' },
+	{ pitch: 72, startTime: 3.5, duration: 1.0, velocity: 115, color: '#ff9f43' },
+];
+
 const chordProgression: Note[] = [
 	// C major chord
 	{ pitch: 60, startTime: 0, duration: 1.5, velocity: 80 },
@@ -190,6 +201,16 @@ export const ChordProgression: Story = {
 export const ComplexMelody: Story = {
 	args: {
 		notes: complexMelody,
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const PerNoteColors: Story = {
+	args: {
+		notes: coloredNotes,
+		theme: {
+			activeNoteColorMode: 'note',
+		},
 	},
 	render: (args) => <AutoPlayPianoRoll {...args} />,
 };
