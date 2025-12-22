@@ -131,6 +131,11 @@ export interface PianoRollProps {
 	allowBackgroundPlayback?: boolean;
 
 	/**
+	 * Master volume (0-1)
+	 */
+	volume?: number;
+
+	/**
 	 * Loop playback back to the beginning when the sequence ends
 	 */
 	loop?: boolean;
@@ -162,6 +167,7 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			onStateChange,
 			onTimeUpdate,
 			allowBackgroundPlayback = true,
+			volume,
 			loop = false,
 		},
 		ref
@@ -191,6 +197,7 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			return new PianoAudioEngine();
 		});
 		const defaultAudioEngineRef = useRef<AudioEngine | null>(null);
+		const volumeRef = useRef<number | undefined>(volume);
 
 		// Store reference to default engine for cleanup
 		useEffect(() => {
@@ -218,12 +225,22 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 				console.error('Failed to initialize audio engine:', error);
 			});
 
+			if (volumeRef.current !== undefined) {
+				audioEngine.setVolume(volumeRef.current);
+			}
+
 			return () => {
 				if (!customAudioEngine && defaultAudioEngineRef.current) {
 					defaultAudioEngineRef.current.dispose();
 				}
 			};
 		}, [audioEngine, customAudioEngine]);
+
+		useEffect(() => {
+			volumeRef.current = volume;
+			if (volume === undefined) return;
+			audioEngine.setVolume(volume);
+		}, [audioEngine, volume]);
 
 		type ActiveNoteEntry = { velocity: number; color?: string };
 
