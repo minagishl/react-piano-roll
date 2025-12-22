@@ -122,6 +122,11 @@ export interface PianoRollProps {
 	 * Callback when playback time changes
 	 */
 	onTimeUpdate?: (time: number) => void;
+
+	/**
+	 * Allow playback to continue in background tabs
+	 */
+	allowBackgroundPlayback?: boolean;
 }
 
 export interface PianoRollHandle extends PlaybackController {
@@ -149,6 +154,7 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			rollHeight = 400,
 			onStateChange,
 			onTimeUpdate,
+			allowBackgroundPlayback = true,
 		},
 		ref
 	) => {
@@ -239,6 +245,7 @@ export const PianoRoll = forwardRef<PianoRollHandle, PianoRollProps>(
 			onTick: (time) => {
 				onTimeUpdate?.(time);
 			},
+			allowBackgroundPlayback,
 		});
 
 		// Notify state changes

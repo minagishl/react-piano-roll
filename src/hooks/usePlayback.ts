@@ -16,6 +16,11 @@ interface UsePlaybackOptions {
 	 * Initial time position
 	 */
 	initialTime?: Time;
+
+	/**
+	 * Continue playback timing in background tabs
+	 */
+	allowBackgroundPlayback?: boolean;
 }
 
 interface UsePlaybackReturn extends PlaybackController {
@@ -34,16 +39,23 @@ interface UsePlaybackReturn extends PlaybackController {
  * Hook for managing playback state and time
  */
 export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn {
-	const { onTick, initialState = 'stopped', initialTime = 0 } = options;
+	const {
+		onTick,
+		initialState = 'stopped',
+		initialTime = 0,
+		allowBackgroundPlayback = true,
+	} = options;
 
 	const [state, setState] = useState<PlaybackState>(initialState);
 	const [currentTime, setCurrentTime] = useState<Time>(initialTime);
 
 	const animationFrameRef = useRef<number>();
+	const intervalRef = useRef<number>();
 	const lastTimeRef = useRef<number>(0);
 	const playbackTimeRef = useRef<Time>(initialTime);
 	const stateRef = useRef<PlaybackState>(initialState);
 	const tickRef = useRef<() => void>();
+	const allowBackgroundPlaybackRef = useRef<boolean>(allowBackgroundPlayback);
 
 	// Initialize lastTimeRef after mount to avoid calling performance.now() during render
 	useEffect(() => {
@@ -77,7 +89,9 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 		setCurrentTime(playbackTimeRef.current);
 		onTickRef.current?.(playbackTimeRef.current);
 
-		animationFrameRef.current = requestAnimationFrame(tickRef.current!);
+		if (!allowBackgroundPlaybackRef.current) {
+			animationFrameRef.current = requestAnimationFrame(tickRef.current!);
+		}
 	}, []);
 
 	// Update tick ref when tick changes
@@ -85,31 +99,53 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 		tickRef.current = tick;
 	}, [tick]);
 
+	const stopLoop = useCallback(() => {
+		if (animationFrameRef.current) {
+			cancelAnimationFrame(animationFrameRef.current);
+			animationFrameRef.current = undefined;
+		}
+		if (intervalRef.current) {
+			clearInterval(intervalRef.current);
+			intervalRef.current = undefined;
+		}
+	}, []);
+
+	const startLoop = useCallback(() => {
+		stopLoop();
+		lastTimeRef.current = performance.now();
+
+		if (allowBackgroundPlaybackRef.current) {
+			intervalRef.current = window.setInterval(() => {
+				tickRef.current?.();
+			}, 16);
+		} else {
+			animationFrameRef.current = requestAnimationFrame(tickRef.current!);
+		}
+	}, [stopLoop]);
+
 	const play = useCallback(() => {
 		if (stateRef.current === 'playing') return;
 
+		stateRef.current = 'playing';
 		setState('playing');
-		lastTimeRef.current = performance.now();
-		animationFrameRef.current = requestAnimationFrame(tickRef.current!);
-	}, []);
+		startLoop();
+	}, [startLoop]);
 
 	const pause = useCallback(() => {
 		if (stateRef.current !== 'playing') return;
 
+		stateRef.current = 'paused';
 		setState('paused');
-		if (animationFrameRef.current) {
-			cancelAnimationFrame(animationFrameRef.current);
-		}
-	}, []);
+		stopLoop();
+	}, [stopLoop]);
 
 	const stop = useCallback(() => {
+		stateRef.current = 'stopped';
 		setState('stopped');
-		if (animationFrameRef.current) {
-			cancelAnimationFrame(animationFrameRef.current);
-		}
+		stopLoop();
 		playbackTimeRef.current = 0;
 		setCurrentTime(0);
-	}, []);
+	}, [stopLoop]);
 
 	const seek = useCallback((time: Time) => {
 		playbackTimeRef.current = Math.max(0, time);
@@ -125,14 +161,18 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 		return stateRef.current;
 	}, []);
 
-	// Cleanup on unmount
+	// Restart loop when background playback setting changes while playing
+	useEffect(() => {
+		allowBackgroundPlaybackRef.current = allowBackgroundPlayback;
+		if (state !== 'playing') return;
+		startLoop();
+	}, [allowBackgroundPlayback, state, startLoop]);
+
 	useEffect(() => {
 		return () => {
-			if (animationFrameRef.current) {
-				cancelAnimationFrame(animationFrameRef.current);
-			}
+			stopLoop();
 		};
-	}, []);
+	}, [stopLoop]);
 
 	return {
 		play,

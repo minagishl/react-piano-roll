@@ -22,7 +22,7 @@ interface NoteCanvasProps {
 	/**
 	 * Whether playback is currently running
 	 */
-	isPlaying: boolean;
+	isPlaying?: boolean;
 
 	/**
 	 * Keyboard configuration
@@ -58,7 +58,7 @@ interface NoteCanvasProps {
 export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 	notes,
 	currentTime,
-	isPlaying,
+	isPlaying = true,
 	keyboardConfig,
 	theme,
 	animationConfig,
@@ -172,6 +172,23 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 			const noteStartTime = note.startTime;
 			const noteEndTime = note.startTime + note.duration;
 
+			// Trigger note as it reaches the keyboard (bottom of canvas), using a small time tolerance.
+			const timeTolerance = 0.01; // 10ms tolerance
+			const hasReachedKeyboard = noteStartTime <= currentTime + timeTolerance;
+			const justReachedKeyboard = noteStartTime >= previousTime - timeTolerance;
+			const shouldTrigger =
+				isPlaying && hasReachedKeyboard && justReachedKeyboard && noteEndTime >= currentTime;
+
+			if (shouldTrigger && !triggeredNotesRef.current.has(note)) {
+				triggeredNotesRef.current.add(note);
+				onNoteTrigger?.(note);
+			}
+
+			// Clean up triggered notes that have ended
+			if (noteEndTime < currentTime && triggeredNotesRef.current.has(note)) {
+				triggeredNotesRef.current.delete(note);
+			}
+
 			// Skip notes that are not in visible range
 			if (noteEndTime < currentTime || noteStartTime > endTime) {
 				return;
@@ -189,23 +206,6 @@ export const NoteCanvas: React.FC<NoteCanvasProps> = ({
 			// Note height based on duration
 			const noteHeight = note.duration * pixelsPerSecond;
 			const y = height - timeUntilStart * pixelsPerSecond - noteHeight;
-
-			// Trigger note as it reaches the keyboard (bottom of canvas), using a small time tolerance.
-			const timeTolerance = 0.01; // 10ms tolerance
-			const hasReachedKeyboard = noteStartTime <= currentTime + timeTolerance;
-			const justReachedKeyboard = noteStartTime >= previousTime - timeTolerance;
-			const shouldTrigger =
-				isPlaying && hasReachedKeyboard && justReachedKeyboard && noteEndTime >= currentTime;
-
-			if (shouldTrigger && !triggeredNotesRef.current.has(note)) {
-				triggeredNotesRef.current.add(note);
-				onNoteTrigger?.(note);
-			}
-
-			// Clean up triggered notes that have ended
-			if (noteEndTime < currentTime && triggeredNotesRef.current.has(note)) {
-				triggeredNotesRef.current.delete(note);
-			}
 
 			// Only draw if visible
 			if (y + noteHeight >= 0 && y <= height) {

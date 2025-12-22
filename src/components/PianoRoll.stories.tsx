@@ -765,3 +765,10 @@ export const MusyngKiteWithProgramNumberSelector: Story = {
 	},
 	render: (args) => <ProgramNumberDemo {...args} />,
 };
+
+export const SilentPlayback: Story = {
+	args: {
+		notes: sampleNotes,
+	},
+	render: (args) => <AutoPlayPianoRoll {...args} allowBackgroundPlayback={false} />,
+};
