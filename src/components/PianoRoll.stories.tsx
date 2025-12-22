@@ -16,6 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const revolutionaryUrl = new URL('../assets/Revolutionary.mid', import.meta.url).toString();
 const laCampanellaUrl = new URL('../assets/LaCampanella.mid', import.meta.url).toString();
 const quatreMainsUrl = new URL('../assets/QuatreMains.mid', import.meta.url).toString();
 
@@ -213,6 +214,16 @@ export const PerNoteColors: Story = {
 		},
 	},
 	render: (args) => <AutoPlayPianoRoll {...args} />,
+};
+
+export const MidiExampleRevolutionary: Story = {
+	args: {
+		notes: [],
+		rollHeight: 500,
+	},
+	render: (args) => (
+		<MidiAutoPlayPianoRoll {...args} midiUrl={revolutionaryUrl} instrument='acoustic_grand_piano' />
+	),
 };
 
 export const MidiExampleLaCampanella: Story = {
