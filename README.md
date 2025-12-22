@@ -1,9 +1,6 @@
-# react-piano-roll
+# React Piano Roll
 
 A production-ready React component library for creating beautiful piano roll / falling notes visualizations with high-quality audio playback.
-
-[![npm version](https://img.shields.io/npm/v/react-piano-roll.svg)](https://www.npmjs.com/package/react-piano-roll)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
 
@@ -21,20 +18,20 @@ A production-ready React component library for creating beautiful piano roll / f
 
 ```bash
 # Using pnpm
-pnpm add react-piano-roll
+pnpm add @minagishl/react-piano-roll
 
 # Using npm
-npm install react-piano-roll
+npm install @minagishl/react-piano-roll
 
 # Using yarn
-yarn add react-piano-roll
+yarn add @minagishl/react-piano-roll
 ```
 
 ## Quick Start
 
 ```tsx
-import { PianoRoll } from 'react-piano-roll';
-import type { Note } from 'react-piano-roll';
+import { PianoRoll } from '@minagishl/react-piano-roll';
+import type { Note } from '@minagishl/react-piano-roll';
 
 const notes: Note[] = [
 	{ pitch: 60, startTime: 0, duration: 0.5, velocity: 80 },
@@ -53,7 +50,7 @@ function App() {
 
 ```tsx
 import { useRef } from 'react';
-import { PianoRoll, PianoRollHandle } from 'react-piano-roll';
+import { PianoRoll, PianoRollHandle } from '@minagishl/react-piano-roll';
 
 function MusicPlayer() {
 	const pianoRollRef = useRef<PianoRollHandle>(null);
@@ -244,7 +241,7 @@ import {
 	getNoteNameFromMIDI,
 	getMIDIFromNoteName,
 	midiToFrequency,
-} from 'react-piano-roll';
+} from '@minagishl/react-piano-roll';
 
 isBlackKey(61); // true (C#)
 getNoteNameFromMIDI(60); // "C4"
@@ -257,7 +254,7 @@ midiToFrequency(69); // 440 (Hz)
 You can provide your own audio engine implementation:
 
 ```tsx
-import { AudioEngine } from 'react-piano-roll';
+import { AudioEngine } from '@minagishl/react-piano-roll';
 
 class CustomAudioEngine implements AudioEngine {
 	async init() {
@@ -292,7 +289,7 @@ const myAudioEngine = new CustomAudioEngine();
 The default audio engine supports loading custom piano samples:
 
 ```tsx
-import { PianoAudioEngine } from 'react-piano-roll';
+import { PianoAudioEngine } from '@minagishl/react-piano-roll';
 
 const audioEngine = new PianoAudioEngine();
 await audioEngine.init();

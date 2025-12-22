@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2024-12-22
 
 ### Added
-- Initial release of react-piano-roll
+
+- Initial release of @minagishl/react-piano-roll
 - Core PianoRoll component with falling notes visualization
 - Sample-based audio engine using Web Audio API
 - Keyboard component with key highlighting
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Canvas-based rendering for performance
 
 ### Features
+
 - Beautiful piano roll visualization
 - High-quality sample-based audio
 - Extensive customization options
@@ -35,5 +37,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Light/dark theme support
 - Performance-optimized canvas rendering
 
-[Unreleased]: https://github.com/yourusername/react-piano-roll/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/yourusername/react-piano-roll/releases/tag/v0.1.0
+[Unreleased]: https://github.com/minagishl/react-piano-roll/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/minagishl/react-piano-roll/releases/tag/v0.1.0

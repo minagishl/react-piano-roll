@@ -1,4 +1,4 @@
-# Project Summary: react-piano-roll
+# Project Summary: @minagishl/react-piano-roll
 
 ## Overview
 
@@ -161,7 +161,7 @@ As specified:
 ## Usage Example
 
 ```tsx
-import { PianoRoll } from 'react-piano-roll';
+import { PianoRoll } from '@minagishl/react-piano-roll';
 
 const notes = [
 	{ pitch: 60, startTime: 0, duration: 1, velocity: 80 },
@@ -199,8 +199,8 @@ function App() {
 
 ### For Using
 
-1. Install: `pnpm add react-piano-roll`
-2. Import: `import { PianoRoll } from 'react-piano-roll'`
+1. Install: `pnpm add @minagishl/react-piano-roll`
+2. Import: `import { PianoRoll } from '@minagishl/react-piano-roll'`
 3. Use: `<PianoRoll notes={notes} />`
 
 ## Audio Quality Improvements
@@ -216,7 +216,6 @@ For production use, consider:
    ```
 
 2. **Sample Every 3-12 Semitones**
-
    - Better pitch accuracy
    - Reduced artifacts
 
@@ -228,12 +227,10 @@ For production use, consider:
 ## Known Limitations
 
 1. **Browser AutoPlay Policy**
-
    - Audio requires user interaction
    - AudioContext may start suspended
 
 2. **Sample Loading**
-
    - Default engine uses oscillators (synthetic)
    - Users must provide samples for piano quality
 
@@ -277,7 +274,7 @@ For production use, consider:
 
 ## Conclusion
 
-The `react-piano-roll` package is complete and production-ready. It provides:
+The `@minagishl/react-piano-roll` package is complete and production-ready. It provides:
 
 - Beautiful visualization
 - High-quality audio capability

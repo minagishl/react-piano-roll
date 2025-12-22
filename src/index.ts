@@ -1,5 +1,5 @@
 /**
- * react-piano-roll
+ * @minagishl/react-piano-roll
  * A production-ready React component for piano roll / falling notes visualization
  */
 

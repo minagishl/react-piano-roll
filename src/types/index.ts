@@ -1,5 +1,5 @@
 /**
- * Core type definitions for react-piano-roll
+ * Core type definitions for @minagishl/react-piano-roll
  */
 
 /**

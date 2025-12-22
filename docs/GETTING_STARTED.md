@@ -1,6 +1,6 @@
-# Getting Started with react-piano-roll
+# Getting Started with @minagishl/react-piano-roll
 
-This guide will help you get started with developing and using the react-piano-roll package.
+This guide will help you get started with developing and using the @minagishl/react-piano-roll package.
 
 ## Project Structure
 
@@ -127,13 +127,11 @@ pnpm build
 ### Core Components
 
 1. **PianoRoll** (`src/components/PianoRoll.tsx`)
-
    - Main component that orchestrates everything
    - Manages playback state
    - Coordinates audio and visualization
 
 2. **Keyboard** (`src/components/Keyboard.tsx`)
-
    - Renders piano keyboard using SVG
    - Highlights active notes
    - Responsive to configuration

@@ -1,6 +1,6 @@
 # Usage Examples
 
-This document provides comprehensive examples for using react-piano-roll.
+This document provides comprehensive examples for using @minagishl/react-piano-roll.
 
 ## Table of Contents
 
@@ -20,8 +20,8 @@ This document provides comprehensive examples for using react-piano-roll.
 ### Simple Note Display
 
 ```tsx
-import { PianoRoll } from 'react-piano-roll';
-import type { Note } from 'react-piano-roll';
+import { PianoRoll } from '@minagishl/react-piano-roll';
+import type { Note } from '@minagishl/react-piano-roll';
 
 const notes: Note[] = [
 	{ pitch: 60, startTime: 0, duration: 1, velocity: 80 },
@@ -38,7 +38,7 @@ export function SimpleExample() {
 
 ```tsx
 import { useRef, useEffect } from 'react';
-import { PianoRoll, PianoRollHandle } from 'react-piano-roll';
+import { PianoRoll, PianoRollHandle } from '@minagishl/react-piano-roll';
 
 export function AutoPlayExample() {
 	const pianoRollRef = useRef<PianoRollHandle>(null);
@@ -64,7 +64,7 @@ export function AutoPlayExample() {
 
 ```tsx
 import { useState, useRef } from 'react';
-import { PianoRoll, PianoRollHandle } from 'react-piano-roll';
+import { PianoRoll, PianoRollHandle } from '@minagishl/react-piano-roll';
 
 export function PlaybackControls() {
 	const pianoRollRef = useRef<PianoRollHandle>(null);
@@ -332,7 +332,7 @@ export function SlowAnimation() {
 
 ```tsx
 import { useEffect, useRef } from 'react';
-import { PianoAudioEngine, PianoRoll } from 'react-piano-roll';
+import { PianoAudioEngine, PianoRoll } from '@minagishl/react-piano-roll';
 
 export function CustomSamples() {
 	const audioEngineRef = useRef<PianoAudioEngine>();
@@ -369,7 +369,7 @@ export function CustomSamples() {
 
 ```tsx
 import { useState, useRef } from 'react';
-import { PianoAudioEngine, PianoRoll } from 'react-piano-roll';
+import { PianoAudioEngine, PianoRoll } from '@minagishl/react-piano-roll';
 
 export function VolumeControl() {
 	const audioEngineRef = useRef(new PianoAudioEngine());
@@ -406,8 +406,8 @@ export function VolumeControl() {
 
 ```tsx
 import { useState } from 'react';
-import { PianoRoll, getMIDIFromNoteName } from 'react-piano-roll';
-import type { Note } from 'react-piano-roll';
+import { PianoRoll, getMIDIFromNoteName } from '@minagishl/react-piano-roll';
+import type { Note } from '@minagishl/react-piano-roll';
 
 // You'll need a MIDI parser library like 'midi-parser-js' or '@tonejs/midi'
 import { Midi } from '@tonejs/midi';
@@ -453,8 +453,8 @@ export function MIDILoader() {
 
 ```tsx
 import { useState, useCallback } from 'react';
-import { PianoRoll } from 'react-piano-roll';
-import type { Note } from 'react-piano-roll';
+import { PianoRoll } from '@minagishl/react-piano-roll';
+import type { Note } from '@minagishl/react-piano-roll';
 
 export function RealtimeInput() {
 	const [notes, setNotes] = useState<Note[]>([]);
