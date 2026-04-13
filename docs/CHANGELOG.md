@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Loop playback via the `loop` prop on `PianoRoll`
+- Note and keyboard key coloring driven by active notes (including per-note custom colors)
+- Master volume control via the `volume` prop (0–1)
+- Additional bundled MIDI sample for demos and testing
+- GitHub pull request template (`.github/pull_request_template.md`)
+
 ## [0.1.0] - 2024-12-22
 
 ### Added
