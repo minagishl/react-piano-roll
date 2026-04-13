@@ -61,12 +61,12 @@ export function usePlayback(options: UsePlaybackOptions = {}): UsePlaybackReturn
 	const [state, setState] = useState<PlaybackState>(initialState);
 	const [currentTime, setCurrentTime] = useState<Time>(initialTime);
 
-	const animationFrameRef = useRef<number>();
-	const intervalRef = useRef<number>();
+	const animationFrameRef = useRef<number | undefined>(undefined);
+	const intervalRef = useRef<number | undefined>(undefined);
 	const lastTimeRef = useRef<number>(0);
 	const playbackTimeRef = useRef<Time>(initialTime);
 	const stateRef = useRef<PlaybackState>(initialState);
-	const tickRef = useRef<() => void>();
+	const tickRef = useRef<(() => void) | undefined>(undefined);
 	const allowBackgroundPlaybackRef = useRef<boolean>(allowBackgroundPlayback);
 	const loopRef = useRef<boolean>(loop);
 	const loopDurationRef = useRef<Time>(loopDuration ?? 0);
