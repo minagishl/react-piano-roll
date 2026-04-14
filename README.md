@@ -14,6 +14,10 @@ A production-ready React component library for creating beautiful piano roll / f
 - **Performance** - Canvas-based rendering for smooth animations
 - **Zero Dependencies** - Only peer dependencies on React
 
+## Requirements
+
+Peer dependencies: `react` and `react-dom` **^18.0.0** or **^19.0.0**.
+
 ## Installation
 
 ```bash

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Peer dependency range now includes React 19 (`react` / `react-dom` `^18.0.0 || ^19.0.0`); dev dependencies use React 19
+- `usePlayback` refs updated for React 19’s stricter `useRef` TypeScript typings
+
 ### Added
 
 - Loop playback via the `loop` prop on `PianoRoll`
